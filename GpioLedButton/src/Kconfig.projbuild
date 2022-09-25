@@ -1,0 +1,8 @@
+menu "Configuration button"
+    config IS_ACTIVATE
+        bool "Activate by interrupt"
+        default false
+        help
+            use it to set the button with interrupt
+
+endmenu

@@ -1,0 +1,16 @@
+menu "Example Configuration"
+
+    config USER_NAME
+            string "Enter your name"
+            default ""
+            help
+                Enter your name to saludate you.
+
+    config USER_AGE
+            int "How old are you"
+            default 18
+            help
+                Enter your age to acces to the code 
+
+
+endmenu
