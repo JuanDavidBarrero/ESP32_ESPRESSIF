@@ -12,7 +12,7 @@
 #define GPIO_SCLK 18
 #define GPIO_CS 5
 
-#define RCV_HOST VSPI_HOST
+#define RCV_HOST HSPI_HOST
 
 char recvbuf[129];
 char txbuf[129];
@@ -46,23 +46,19 @@ void app_main()
     spi_slave_transaction_t data_rx;
     memset(&data_rx, 0, sizeof(data_rx));
 
-
     while (true)
     {
 
-        sprintf(txbuf,"All done ! tries -> %i",count);
+        sprintf(txbuf, "SPI SLAVE RESPONDE  -> %i\n", count);
 
-        data_rx.length = sizeof(recvbuf)*8;
-        data_rx.tx_buffer =txbuf; 
-        data_rx.rx_buffer=recvbuf;
+        data_rx.length = sizeof(recvbuf) * 8;
+        data_rx.tx_buffer = txbuf;
+        data_rx.rx_buffer = recvbuf;
+
         ret = spi_slave_transmit(RCV_HOST, &data_rx, portMAX_DELAY);
 
-        if (ret){
-            printf(recvbuf);
-            printf("\n");
-        }
+        printf(recvbuf);
 
         count++;
     }
-    
 }
