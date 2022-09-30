@@ -11,7 +11,7 @@ static const char *TAG = "SLAVE";
 #define I2C_SLAVE_SDA_IO 21
 #define I2C_SLAVE_FREQ_HZ 100000
 #define I2C_SLAVE_TX_BUF_LEN 255
-#define I2C_SLAVE_RX_BUF_LEN 255
+#define I2C_SLAVE_RX_BUF_LEN 16
 #define ESP_SLAVE_ADDR 0x0A
 
 #define WRITE_BIT I2C_MASTER_WRITE
@@ -22,24 +22,31 @@ static const char *TAG = "SLAVE";
 #define NACK_VAL 0x1
 
 int i2c_slave_port = 0;
-uint8_t  received_data[I2C_SLAVE_RX_BUF_LEN] = {0};
+uint8_t received_data[I2C_SLAVE_RX_BUF_LEN] = {0};
+uint8_t transmit_data[I2C_SLAVE_RX_BUF_LEN] = {0};
 
 esp_err_t i2c_slave_init(void);
 
-void app_main() {
+void app_main()
+{
 
-    ESP_LOGI(TAG,"I2C Slave init");
+    ESP_LOGI(TAG, "I2C Slave init");
 
     i2c_slave_init();
 
     while (true)
     {
-         i2c_slave_read_buffer(i2c_slave_port, received_data, I2C_SLAVE_RX_BUF_LEN, portMAX_DELAY);
-         i2c_reset_rx_fifo(i2c_slave_port);
-         printf((char*)received_data);
+        esp_err_t ret;
+        ret = i2c_slave_read_buffer(i2c_slave_port, received_data, I2C_SLAVE_RX_BUF_LEN, portMAX_DELAY);
+        i2c_reset_rx_fifo(i2c_slave_port);
+        printf((char *)received_data);
+        if (ret != ESP_FAIL)
+        {
+            sprintf(((char *)transmit_data), "test es buena\n");
+            i2c_slave_write_buffer(i2c_slave_port, transmit_data, 16, 100 / portTICK_PERIOD_MS);
+        }
+        vTaskDelay(300 / portTICK_PERIOD_MS);
     }
-    
-
 }
 
 esp_err_t i2c_slave_init(void)
