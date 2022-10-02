@@ -43,6 +43,7 @@ void app_main()
 
     char sendbuf[128] = {0};
     char recvbuf[128] = {0};
+    int datatx[2];
     spi_transaction_t data_tx;
     memset(&data_tx, 0, sizeof(data_tx));
 

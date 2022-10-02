@@ -25,9 +25,11 @@ static const char *TAG = "MASTER";
 int i2c_master_port = 0;
 int count = 0;
 char txBuffer[128] = {0};
+uint8_t rxBuffer[16] = {0};
 
 esp_err_t initI2C();
 esp_err_t i2c_master_send(uint8_t *message, int len);
+esp_err_t i2c_master_read_slave(uint8_t *data_rd, size_t size);
 
 void app_main()
 {
@@ -35,11 +37,23 @@ void app_main()
 
     initI2C();
 
+    esp_err_t ret;
+
     while (true)
     {
-        sprintf(txBuffer, "Maestro envia %i\n", count++);
-        i2c_master_send((uint8_t*)txBuffer,strlen(txBuffer));
-        vTaskDelay(1000/portTICK_PERIOD_MS);
+
+        sprintf(txBuffer, "Maestro envia %i\n", count);
+        ret = i2c_master_send((uint8_t *)txBuffer, strlen(txBuffer));
+        count++;
+        if (ret == ESP_OK)
+        {
+            ret = i2c_master_read_slave(rxBuffer, 16);
+            if (ret == ESP_OK)
+                printf((char *)rxBuffer);
+        }
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        if (count >= 9)
+            count = 0;
     }
 }
 
@@ -72,6 +86,26 @@ esp_err_t i2c_master_send(uint8_t *message, int len)
     i2c_master_stop(cmd);
 
     ret = i2c_master_cmd_begin(i2c_master_port, cmd, 1000 / portTICK_PERIOD_MS);
+    i2c_cmd_link_delete(cmd);
+    return ret;
+}
+
+esp_err_t i2c_master_read_slave(uint8_t *data_rd, size_t size)
+{
+    if (size == 0)
+    {
+        return ESP_OK;
+    }
+    i2c_cmd_handle_t cmd = i2c_cmd_link_create();
+    i2c_master_start(cmd);
+    i2c_master_write_byte(cmd, (SLAVE_ADDRESS << 1) | READ_BIT, ACK_CHECK_EN);
+    if (size > 1)
+    {
+        i2c_master_read(cmd, data_rd, size - 1, ACK_VAL);
+    }
+    i2c_master_read_byte(cmd, data_rd + size - 1, NACK_VAL);
+    i2c_master_stop(cmd);
+    esp_err_t ret = i2c_master_cmd_begin(i2c_master_port, cmd, 1000 / portTICK_PERIOD_MS);
     i2c_cmd_link_delete(cmd);
     return ret;
 }
