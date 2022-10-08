@@ -1,0 +1,29 @@
+*{
+    background-color: #f3f3f3;
+}
+
+h1 {
+    text-align: center;
+}
+
+
+button{
+    cursor: pointer;
+    border: none;
+    background-color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+} 
+
+button:active{
+    transform: scale(0.95);
+}
+
+.container{
+    margin: 0 auto;
+    width: 80%;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
