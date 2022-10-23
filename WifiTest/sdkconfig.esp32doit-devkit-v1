@@ -129,6 +129,14 @@ CONFIG_PARTITION_TABLE_MD5=y
 # end of Partition Table
 
 #
+# My WiFI Configuration
+#
+CONFIG_MY_SSID="DANIELA"
+CONFIG_MY_PASSWORD="25285602"
+CONFIG_MAXIMUM_RETRY=3
+# end of My WiFI Configuration
+
+#
 # Compiler options
 #
 CONFIG_COMPILER_OPTIMIZATION_DEFAULT=y
