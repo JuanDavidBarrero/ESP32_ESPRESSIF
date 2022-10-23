@@ -10,8 +10,6 @@
 #include "esp_netif.h"
 #include <esp_now.h>
 
-#define SSID "DANIELA"
-#define PASS "25285602"
 
 #define TAG "MAIN"
 
@@ -28,40 +26,39 @@ typedef struct
 
 message_sent_t myData;
 esp_now_peer_info_t peerInfo;
+QueueHandle_t data_espnow_queue;
 
 void OnDataRecv(const uint8_t *mac, const uint8_t *incomingData, int len)
 {
-    char charVal[10];
     memcpy(&myData, incomingData, sizeof(myData));
-    // printf("Bytes received: ");
-    printf("\n Char: ");
-    printf((char *)myData.a);
-    // printf("\n Int: ");
-    // printf((char *)myData.b);
-    // printf("\n Float: ");
-    // sprintf(charVal, "%f", myData.c);
-    // printf(charVal);
-    // printf("\n Bool: ");
-    // printf((char *)myData.d);
-    ESP_LOGI("\nRECEIVER","Mensaje recivido completo");
-}
 
+    if (xQueueSend(data_espnow_queue, &myData, 10) != pdTRUE)
+    {
+        ESP_LOGE(TAG, "QUEUE is full");
+    }
+
+    ESP_LOGI("\nRECEIVER", "Mensaje recivido completo");
+}
 
 void wifi_connection()
 {
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
-    ESP_ERROR_CHECK( esp_wifi_init(&cfg) );
-    ESP_ERROR_CHECK( esp_wifi_set_storage(WIFI_STORAGE_RAM) );
-    ESP_ERROR_CHECK( esp_wifi_set_mode(WIFI_MODE_STA) );
-    ESP_ERROR_CHECK( esp_wifi_start());
+    ESP_ERROR_CHECK(esp_wifi_init(&cfg));
+    ESP_ERROR_CHECK(esp_wifi_set_storage(WIFI_STORAGE_RAM));
+    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
+    ESP_ERROR_CHECK(esp_wifi_start());
 }
+
+void task(void *args);
 
 extern "C" void app_main(void)
 {
     nvs_flash_init();
     wifi_connection();
+
+    data_espnow_queue = xQueueCreate(2, sizeof(message_sent_t));
 
     printf("WIFI was initiated ...........\n\n");
 
@@ -77,4 +74,23 @@ extern "C" void app_main(void)
     }
 
     esp_now_register_recv_cb(OnDataRecv);
+
+    xTaskCreatePinnedToCore(&task, "task", 2048, NULL, 1, NULL, 0);
+}
+
+void task(void *args)
+{
+
+    message_sent_t data;
+
+    for (;;)
+    {
+        if (xQueueReceive(data_espnow_queue, &data, portMAX_DELAY) == pdTRUE)
+        {
+            printf("%s\n",data.a);
+            printf("El valor entero es %i\n", data.b);
+            printf("El valor flotante es %f\n", data.c);
+            printf("El valor booleano es %i\n", data.d);
+        }
+    }
 }
