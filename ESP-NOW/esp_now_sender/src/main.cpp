@@ -10,8 +10,6 @@
 #include "esp_netif.h"
 #include <esp_now.h>
 
-#define SSID "DANIELA"
-#define PASS "25285602"
 
 #define TAG "MAIN"
 
@@ -80,7 +78,7 @@ extern "C" void app_main(void)
     while (true)
     {
         strcpy(myData.a, "Hello Juan David");
-        myData.b = 15;
+        myData.b = esp_random();
         myData.c = 1.2;
         myData.d = false;
 
