@@ -10,12 +10,27 @@
 </head>
 
 <body>
-    <h1>HOLA MUNDO</h1>
+    <h1 class="title">Esp32 Server</h1>
 
-    <div class="container">
-        <button id="btn">Clik me</button>
+    <div class="cotainer">
+
+        <div class="data">
+            <div id="text_esp"></div>
+            <button id="getButton">click me</button>
+        </div>
+
+        <form action="" id="form">
+            <input type="text" placeholder="Name" name="" id="nombre_env">
+            <p><small>What is your name?</small></p>
+            <input type="password" placeholder="password" name="" id="pass">
+            <p><small>Enter password</small></p>
+            <button type="submit" id="postButton">Send</button>
+            <small class="esp_resp" id="esp_resp"></small>
+        </form>
+
     </div>
+
+    <script src="script.js"></script>
 </body>
-<script src="script.js"></script>
 
 </html>

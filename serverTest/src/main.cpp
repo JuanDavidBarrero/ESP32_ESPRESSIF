@@ -14,6 +14,8 @@
 
 static httpd_handle_t http_server_handle = NULL;
 
+uint16_t counter = 0;
+
 extern const uint8_t index_html_start[] asm("_binary_index_html_start");
 extern const uint8_t index_html_end[] asm("_binary_index_html_end");
 extern const uint8_t app_css_start[] asm("_binary_style_css_start");
@@ -89,7 +91,7 @@ void wifi_connection()
                                            portMAX_DELAY);
     if (bits & WIFI_CONNECTED_BIT)
     {
-        ESP_LOGI("WIFI STATUS", "connected to ap SSID:%s",SSID);
+        ESP_LOGI("WIFI STATUS", "connected to ap SSID:%s", SSID);
     }
     else if (bits & WIFI_FAIL_BIT)
     {
@@ -132,6 +134,45 @@ static esp_err_t http_server_app_js_handler(httpd_req_t *req)
     return ESP_OK;
 }
 
+static esp_err_t http_postInfo(httpd_req_t *req)
+{
+
+    char receiveBuffer[100];
+    size_t recv_size = std::min(req->content_len, sizeof(receiveBuffer));
+    int ret = httpd_req_recv(req, receiveBuffer, recv_size);
+
+    printf("\nPOST content: %s\n", receiveBuffer);
+
+    if (ret <= 0)
+    {
+        if (ret == HTTPD_SOCK_ERR_TIMEOUT)
+        {
+            httpd_resp_send_408(req);
+        }
+        return ESP_FAIL;
+    }
+
+    const char resp[] = "{ \"status\":\"esp POST exitoso\" }";
+    httpd_resp_set_type(req, "application/json");
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+    httpd_resp_send(req, resp, HTTPD_RESP_USE_STRLEN);
+
+    return ESP_OK;
+}
+
+static esp_err_t http_getInfo(httpd_req_t *req)
+{
+
+    char sendBuffer[100];
+
+    sprintf(sendBuffer, "{\"nombre\":\"%s\", \"temp\": %f,  \"version\": \"%s\", \"status\":%i, \"counter\":%i}", "JuanDavid", 26.54, "V1.0.1", 1, counter++);
+    httpd_resp_set_type(req, "application/json");
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+    httpd_resp_send(req, sendBuffer, HTTPD_RESP_USE_STRLEN);
+
+    return ESP_OK;
+}
+
 httpd_handle_t startServer()
 {
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
@@ -158,6 +199,20 @@ httpd_handle_t startServer()
             .handler = http_server_app_js_handler,
             .user_ctx = NULL};
         httpd_register_uri_handler(http_server_handle, &app_js);
+
+        httpd_uri_t getEsp32 = {
+            .uri = "/info",
+            .method = HTTP_GET,
+            .handler = http_getInfo,
+            .user_ctx = NULL};
+        httpd_register_uri_handler(http_server_handle, &getEsp32);
+
+        httpd_uri_t postEsp32 = {
+            .uri = "/user",
+            .method = HTTP_POST,
+            .handler = http_postInfo,
+            .user_ctx = NULL};
+        httpd_register_uri_handler(http_server_handle, &postEsp32);
     }
     return http_server_handle;
 }
