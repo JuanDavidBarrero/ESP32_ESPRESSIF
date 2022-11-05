@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1 class="title">Esp32 Server</h1>
+
+    <div class="cotainer">
+
+        <div class="data">
+            <div id="text_esp"></div>
+            <button id="getButton">click me</button>
+        </div>
+
+        <form action="" id="form">
+            <input type="text" placeholder="Name" name="" id="nombre_env">
+            <p><small>What is your name?</small></p>
+            <input type="password" placeholder="password" name="" id="pass">
+            <p><small>Enter password</small></p>
+            <button type="submit" id="postButton">Send</button>
+            <small class="esp_resp" id="esp_resp"></small>
+        </form>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
