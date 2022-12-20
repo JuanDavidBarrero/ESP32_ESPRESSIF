@@ -72,11 +72,14 @@ extern "C" void app_main(void)
         printf(" failed\n  ! mbedtls_pk_parse_public_keyfile returned -0x%04x\n", (unsigned int)-ret);
     }
 
-    /* In this part is necessary calculate the hash of the message sent*/
+    /* In this part is necessary calculate the hash of the message sent when the message is transmit
+        to other device*/
 
     if ((ret = mbedtls_pk_verify(&pk, MBEDTLS_MD_SHA256, shaResult, 0, signedDocument, olen)) != 0)
     {
-        printf(" failed\n  ! mbedtls_pk_verify returned -0x%04x\n", (unsigned int)-ret);
+        printf(" failed ! mbedtls_pk_verify returned -0x%04x\n", (unsigned int)-ret);
+        ESP_LOGE("FAIL", "signature isn't valid");
+
     }
     else
     {
