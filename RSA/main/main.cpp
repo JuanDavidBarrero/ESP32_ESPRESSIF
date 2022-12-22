@@ -2,12 +2,9 @@
 #include "esp_spiffs.h"
 #include "esp_log.h"
 #include <string.h>
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
 #include "mbedtls/ctr_drbg.h"
 #include "mbedtls/pk.h"
 #include "mbedtls/entropy.h"
-
 
 int ret = 0;
 mbedtls_pk_context pk;
@@ -46,7 +43,7 @@ extern "C" void app_main(void)
         return;
     }
 
-    ESP_LOGI("SUCCESS","Generating the encrypted value");
+    ESP_LOGI("SUCCESS", "Generating the encrypted value");
 
     unsigned char to_encrypt[] = "Hades lobo blanco";
     size_t to_encrypt_len = sizeof(to_encrypt);
@@ -62,7 +59,6 @@ extern "C" void app_main(void)
     }
 
     printf("Ecrypted Text: %s \n", encrypted);
-    
 
     vTaskDelay(1000 / portTICK_PERIOD_MS);
 
