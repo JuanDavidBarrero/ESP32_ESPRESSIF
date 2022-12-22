@@ -1,0 +1,21 @@
+menu "My WiFI Configuration"
+
+    config MY_SSID
+            string "Enter your name SSID"
+            default ""
+            help
+                Enter your SSID to connecto to WiFI.
+
+    config MY_PASSWORD
+            string "Enter your PASSWORD"
+            default ""
+            help
+                Enter the passwork in order to connect
+
+    config MAXIMUM_RETRY
+        int "How many times should it try to connect"
+        default 3
+        help
+            Enter how many times the process should be runing before shutdown
+
+endmenu
