@@ -1,6 +1,0 @@
-.devcontainer/
-.vscode/
-build/
-sdkconfig
-sdkconfig.old
-data/private.pem
