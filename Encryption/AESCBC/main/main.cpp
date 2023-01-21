@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "esp_log.h"
+#include "esp_timer.h"
 #include "mbedtls/aes.h"
 
 #define BLOCK_SIZE 16
@@ -23,19 +24,28 @@ extern "C" void app_main(void)
     mbedtls_aes_init(&aes);
     mbedtls_aes_setkey_enc(&aes, key, 128);
 
+    uint32_t start = esp_timer_get_time();
+
     for (int i = 0; i < n_blocks; i++)
     {
         mbedtls_aes_crypt_cbc(&aes, MBEDTLS_AES_ENCRYPT, BLOCK_SIZE, iv, input + i * BLOCK_SIZE, encrypt_output + i * BLOCK_SIZE);
     }
 
+    uint32_t end = esp_timer_get_time();
+
     ESP_LOG_BUFFER_HEX("CBC encrypt", encrypt_output, BLOCK_SIZE * 4);
+
+    ESP_LOGW("Timer", "The time of encryption was %i[ms]", end - start);
+
+    start = esp_timer_get_time();
 
     for (int i = 0; i < n_blocks; i++)
     {
-        mbedtls_aes_crypt_cbc(&aes, MBEDTLS_AES_DECRYPT, BLOCK_SIZE, iv1, encrypt_output+ i*BLOCK_SIZE, decrypt_output+ i*BLOCK_SIZE);
+        mbedtls_aes_crypt_cbc(&aes, MBEDTLS_AES_DECRYPT, BLOCK_SIZE, iv1, encrypt_output + i * BLOCK_SIZE, decrypt_output + i * BLOCK_SIZE);
     }
+    end = esp_timer_get_time();
 
-    ESP_LOG_BUFFER_HEX("CBC decrypt", decrypt_output, BLOCK_SIZE * 4);
+    ESP_LOGW("Timer", "The time of decryption was %i[ms]", end - start);
     ESP_LOGI("CBC plain text", "%s", decrypt_output);
 
     mbedtls_aes_free(&aes);
