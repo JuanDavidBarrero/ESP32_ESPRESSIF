@@ -9,7 +9,7 @@ let number = 0;
 
 getButton.addEventListener('click', async()=>{
 
-    const resp =await fetch("https://192.168.1.96/info");
+    const resp =await fetch("https://192.168.1.28/info");
     const data = await resp.json();
 
     console.log(data);
@@ -39,7 +39,7 @@ form.addEventListener('submit', async (e)=>{
     str = JSON.stringify(user);
 
     console.log(str)
-    const resp =await fetch("https://192.168.1.96/user",
+    const resp =await fetch("https://192.168.1.28/user",
                     {
                         method: "POST",
                         body : str,
