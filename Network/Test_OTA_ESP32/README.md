@@ -1,4 +1,4 @@
-#Important 
+# Important 
 
 In order to use the https module WITHOUT SECURITY must be selec the follow options this only should be use as example
 
@@ -17,6 +17,6 @@ ESP HTTPS OTA
 
 For this example i also made a server where is stored the new firmware that you want to place in the esp32 but this can be any other page that has this service, if you want to run the index code inside the server folder with the following command
 
-````
+```
 node index.js
 ```
