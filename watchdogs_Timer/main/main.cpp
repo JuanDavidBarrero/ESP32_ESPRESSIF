@@ -7,12 +7,13 @@
 #include "esp_log.h"
 
 #define BLINK_GPIO GPIO_NUM_2
+#define TWDT_TIMEOUT_S 3
 
 extern "C" void app_main(void)
 {
     esp_int_wdt_init();
 
-    esp_task_wdt_init(2, true);
+    esp_task_wdt_init(TWDT_TIMEOUT_S, true);
 
     gpio_reset_pin(BLINK_GPIO);
     gpio_set_direction(BLINK_GPIO, GPIO_MODE_OUTPUT);
